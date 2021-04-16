@@ -3,7 +3,7 @@
 
 <img src="https://raw.githubusercontent.com/jhipster/jhipster-artwork/main/family/jhipster_family_member_3.png" alt="JHipster helidon Family Member" width=200 style="max-width:50%;">
 
-> ## 🛠 Mode: Still in construction!s
+> ## 🛠 Mode: Still under construction!
 
 > JHipster blueprint, JHipster Helidon blueprint
 
