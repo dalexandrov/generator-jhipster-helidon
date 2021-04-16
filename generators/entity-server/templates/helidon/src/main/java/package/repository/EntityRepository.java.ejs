@@ -1,0 +1,20 @@
+
+package <%=packageName%>.repository;
+
+import <%=packageName%>.domain.<%=asEntity(entityClass)%>;
+
+import javax.enterprise.context.ApplicationScoped;
+<%_ if (fieldsContainOwnerManyToMany && (databaseType === 'sql' || databaseType === 'mongodb')) { _%>
+import java.util.Optional;
+<%_ } _%>
+
+
+<%_ if (!fieldsContainOwnerManyToMany) { _%>
+@SuppressWarnings("unused")
+<%_ } _%>
+@ApplicationScoped
+public class <%=entityClass%>Repository implements <% if (databaseType === 'mongodb') { %><% } %><<%=asEntity(entityClass)%><% if (jpaMetamodelFiltering) { %>, JpaSpecificationExecutor<<%=asEntity(entityClass)%>><% } %> {
+<%- include('../_partials/imperative/common/persist', this) -%>
+
+<%- include('../_partials/imperative/common/finders', this) -%>
+}

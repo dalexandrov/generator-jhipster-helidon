@@ -1,0 +1,61 @@
+
+application.name=<%= baseName %>
+
+<%_ if(databaseType !== 'no') { _%>
+<%- include('../../../../partials/data_application.properties.ejs', { baseName: baseName, BUILD_DIR: BUILD_DIR, devDatabaseType:devDatabaseType, prodDatabaseType: prodDatabaseType}) -%>
+<%_ } _%>
+
+
+helidon.mailer.from=<%= dasherizedBaseName %>@localhost
+helidon.mailer.host=localhost
+helidon.mailer.port=25
+helidon.mailer.ssl=false
+helidon.mailer.username=
+helidon.mailer.password=
+
+helidon.smallrye-health.root-path=/management/health
+
+<%_ if (authenticationType === 'jwt') { _%>
+mp.jwt.verify.publickey.location=META-INF/resources/publicKey.pem
+mp.jwt.verify.issuer=https://www.jhipster.tech
+helidon.smallrye-jwt.enabled=true
+
+jhipster.security.authentication.jwt.private-key.location=/jwt/privateKey.pem
+jhipster.security.authentication.jwt.issuer=https://www.jhipster.tech
+jhipster.security.authentication.jwt.token-validity-in-seconds=86400
+jhipster.security.authentication.jwt.token-validity-in-seconds-for-remember-me=2592000
+jhipster.mail.base-url=http://127.0.0.1:8080
+
+helidon.http.auth.permission.public.paths=/api/authenticate,/api/register,/api/activate,/api/account/reset-password/init,/api/account/reset-password/finish,/management/health,/management/info,/management/prometheus
+helidon.http.auth.permission.public.policy=permit
+<%_ } _%>
+<%_ if(!skipUserManagement) { _%>
+
+helidon.http.auth.policy.admin-role.roles-allowed=ROLE_ADMIN
+helidon.http.auth.permission.admin.paths=/api/users,/management/**
+helidon.http.auth.permission.admin.policy=admin-role
+
+helidon.http.auth.policy.user-role.roles-allowed=ROLE_USER
+helidon.http.auth.permission.user.paths=/api/**
+helidon.http.auth.permission.user.policy=user-role
+<%_ } _%>
+
+
+<%if (authenticationType === 'oauth2') { _%>
+# OAuth 2.0 and OIDC
+helidon.oidc.enabled=true
+helidon.oidc.auth-server-url=http://localhost:9080/auth/realms/jhipster/
+%dev.helidon.oidc.client-id=web_app
+%dev.helidon.oidc.credentials.secret=web_app
+helidon.oidc.application-type=hybrid
+helidon.oidc.authentication.scopes=profile,address,email,address,phone,offline_access
+helidon.oidc.authentication.cookie-path=/
+helidon.oidc.authentication.redirect-path=/login/oauth2/code/oidc
+helidon.oidc.authentication.restore-path-after-redirect=false
+
+jhipster.oidc.logout-url=http://localhost:9080/auth/realms/jhipster/protocol/openid-connect/logout
+
+%test.helidon.oidc.client-id=dummy
+%test.helidon.oidc.application-type=service
+%test.jhipster.oidc.logout-url=some-dummy-logoutUrl
+<%_ } _%>

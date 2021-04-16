@@ -1,0 +1,60 @@
+
+## configure your datasource
+<%_ if (devDatabaseType === 'h2Disk') { _%>
+javax.sql.DataSource.dev.datasource.jdbc.url=jdbc:h2:file:./<%= BUILD_DIR %>h2db/db/<%= baseName.toLowerCase() %>;DB_CLOSE_DELAY=-1
+javax.sql.DataSource.dev.datasource.db-kind=h2
+javax.sql.DataSource.dev.datasource.username=<%= baseName %>
+javax.sql.DataSource.dev.datasource.password=
+<%_ } _%>
+<%_ if (devDatabaseType === 'h2Memory') { _%>
+javax.sql.DataSource.dev.datasource.jdbc.url=jdbc:h2:mem:<%= baseName.toLowerCase() %>;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+javax.sql.DataSource.dev.datasource.db-kind=h2
+javax.sql.DataSource.dev.datasource.username=<%= baseName %>
+javax.sql.DataSource.dev.datasource.password=
+<%_ } _%>
+<%_ if (devDatabaseType === 'mysql') { _%>
+javax.sql.DataSource.dev.datasource.jdbc.url=jdbc:mysql://localhost:3306/<%= baseName %>?useUnicode=true&characterEncoding=utf8&useSSL=false
+javax.sql.DataSource.dev.datasource.db-kind=mysql
+javax.sql.DataSource.dev.datasource.username=root
+javax.sql.DataSource.dev.datasource.password=
+<%_ } _%>
+<%_ if (prodDatabaseType === 'mysql') { _%>
+javax.sql.DataSource.datasource.jdbc.url=jdbc:mysql://localhost:3306/<%= baseName %>?useUnicode=true&characterEncoding=utf8&useSSL=false
+javax.sql.DataSource.datasource.db-kind=mysql
+javax.sql.DataSource.datasource.username=root
+javax.sql.DataSource.datasource.password=
+<%_ } _%>
+<%_ if (devDatabaseType === 'postgresql') { _%>
+javax.sql.DataSource.datasource.jdbc.url=jdbc:postgresql://localhost:5432/<%= baseName %>
+javax.sql.DataSource.datasource.db-kind=postgresql
+javax.sql.DataSource.datasource.username=<%= baseName %>
+javax.sql.DataSource.datasource.password=
+<%_ } _%>
+<%_ if (prodDatabaseType === 'postgresql') { _%>
+javax.sql.DataSource.datasource.jdbc.url=jdbc:postgresql://localhost:5432/<%= baseName %>
+javax.sql.DataSource.datasource.db-kind=postgresql
+javax.sql.DataSource.datasource.username=<%= baseName %>
+javax.sql.DataSource.datasource.password=
+<%_ } _%>
+<%_ if (databaseType === 'sql') { _%>
+javax.sql.DataSource.datasource.jdbc.max-size=8
+javax.sql.DataSource.datasource.jdbc.min-size=2
+javax.sql.DataSource.hibernate-orm.database.generation=none
+javax.sql.DataSource.hibernate-orm.log.sql=false
+javax.sql.DataSource.hibernate-orm.sql-load-script=no-file
+javax.sql.DataSource.hibernate-orm.implicit-naming-strategy=<%=packageName%>.config.hibernate.JHipsterCompatibleImplicitNamingStrategy
+javax.sql.DataSource.hibernate-orm.physical-naming-strategy=<%=packageName%>.config.hibernate.JHipsterCompatiblePhysicalNamingStrategy
+javax.sql.DataSource.hibernate-orm.second-level-caching-enabled=<%= enableHibernateCache %>
+
+<%_ } _%>
+<%_ if (enableHibernateCache) { _%>
+# jhipster-helidon-needle-hibernate-cache-add-entry
+<%_ } _%>
+<%_ if (databaseType === 'mongodb') { _%>
+
+<%_ } _%>
+
+<%_ if (databaseType === 'sql') { _%>
+javax.sql.DataSource.liquibase.migrate-at-start=true
+
+<%_ } _%>

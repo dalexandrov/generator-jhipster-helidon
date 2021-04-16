@@ -1,0 +1,11 @@
+
+package <%=packageName%>.config;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+public interface JHipsterInfo {
+
+    @ConfigProperty(name = "swagger.enable", defaultValue = "true")
+    Boolean isEnable();
+
+}

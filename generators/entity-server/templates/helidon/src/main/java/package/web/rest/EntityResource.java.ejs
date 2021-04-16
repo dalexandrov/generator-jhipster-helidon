@@ -1,0 +1,45 @@
+
+package <%=packageName%>.web.rest;
+
+<%- include('../../_partials/imperative/web/imports', this); -%>
+
+/**
+ * REST controller for managing {@link <%= packageName %>.domain.<%= asEntity(entityClass) %>}.
+ */
+@Path("/api/<%= entityApiUrl %>")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+@ApplicationScoped
+public class <%= entityClass %>Resource {
+
+    private final Logger log = LoggerFactory.getLogger(<%= entityClass %>Resource.class);
+<%_ if (!readOnly) { _%>
+
+    private static final String ENTITY_NAME = "<%= (clientRootFolder && !skipUiGrouping) ? _.camelCase(`${clientRootFolder}${entityClass}`) : entityInstance %>";
+
+    @ConfigProperty(name = "application.name")
+    String applicationName;
+
+<%_ } _%>
+<%- include('../../_partials/imperative/common/inject', { ...this, constructorName: entityClass + 'Resource', queryService: jpaMetamodelFiltering, isController: true}); -%>
+<%_ if (!readOnly) { _%>
+<%- include('../../_partials/imperative/web/create', this); -%>
+
+<%- include('../../_partials/imperative/web/update', this); -%>
+
+<%- include('../../_partials/imperative/web/delete', this); -%>
+
+<%_ } _%>
+<%_ if (jpaMetamodelFiltering) {  %>
+<%- include('../../_partials/imperative/web/get_all_filtered', this); -%>
+<%_ } else { _%>
+<%- include('../../_partials/imperative/web/get_all', this); -%>
+<%_ } _%>
+
+
+<%- include('../../_partials/imperative/web/get', this); -%>
+<%_ if (searchEngine === 'elasticsearch') { _%>
+
+<%- include('../../_partials/imperative/web/search', this); -%>
+<%_ } _%>
+}

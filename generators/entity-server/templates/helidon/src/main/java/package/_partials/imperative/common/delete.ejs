@@ -1,0 +1,14 @@
+
+<%_ if (!viaService) { _%>
+    <%_ if (!viaRepository) { _%>
+        <%= entityClass %>.findByIdOptional(id).ifPresent(<%= entityInstance %> -> {
+            <%= entityInstance %>.delete();
+        });
+    <%_ } else {_%>
+        <%= entityInstance %>Repository.findByIdOptional(id).ifPresent(<%= entityInstance %> -> {
+            <%= entityInstance %>Repository.delete(<%= entityInstance %>);
+        });
+    <%_ } _%>
+<%_ } else { _%>
+        <%= entityInstance %>Service.delete(id);
+<%_ } _%>

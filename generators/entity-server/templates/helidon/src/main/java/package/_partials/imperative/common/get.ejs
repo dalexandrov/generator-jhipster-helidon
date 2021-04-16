@@ -1,0 +1,11 @@
+
+<%_
+const returnPrefix = returnDirectly ? 'return' : `Optional<${entityOrDtoClass}> ${entityOrDtoInstance} =`;
+_%>
+<%_ if (!viaService) { _%>
+    <%_ const finder = fieldsContainOwnerManyToMany ? 'findOneWithEagerRelationships(id)' : 'findByIdOptional(id)'; _%>
+        <%- returnPrefix %> <%= dataAccessObject %>.<%= finder %><% if (!hasDto) { %>;<% } else { %>
+            .map(<%= entityInstance %> -> <%= mapper %>.toDto((<%= entityClass %>) <%= entityInstance %>)); <% } %>
+<%_  } else { _%>
+        <%- returnPrefix %> <%= entityInstance %>Service.findOne(id);
+<%_ } _%>

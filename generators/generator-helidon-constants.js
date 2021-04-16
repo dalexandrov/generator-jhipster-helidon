@@ -1,0 +1,12 @@
+const HELIDON_VERSION = '2.2.2';
+
+const CACHE_MAXIMUM_SIZE = 100;
+const CACHE_EXPIRE_AFTER_WRITE = '3600S';
+
+const constants = {
+    HELIDON_VERSION: HELIDON_VERSION,
+    CACHE_MAXIMUM_SIZE,
+    CACHE_EXPIRE_AFTER_WRITE,
+};
+
+module.exports = constants;

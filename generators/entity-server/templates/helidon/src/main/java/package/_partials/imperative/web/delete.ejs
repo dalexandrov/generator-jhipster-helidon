@@ -1,0 +1,19 @@
+
+    /**
+     * {@code DELETE  /<%= entityApiUrl %>/:id} : delete the "id" <%= entityInstance %>.
+     *
+     * @param id the id of the <%= entityOrDtoInstance %> to delete.
+     * @return the {@link Response} with status {@code 204 (NO_CONTENT)}.
+     */
+    @DELETE
+    @Path("/{id}")
+    <%_ if (databaseType === 'sql' && !viaService) { _%>
+    @Transactional
+    <%_ } _%>
+    public Response delete<%= entityClass %>(@PathParam("id") <%= primaryKeyType %> id) {
+        log.debug("REST request to delete <%= entityClass %> : {}", id);
+<%- include('../common/delete', this); -%>
+        var response = Response.noContent();
+        HeaderUtil.createEntityDeletionAlert(applicationName, <%= enableTranslation %>, ENTITY_NAME, id<% if (pkType !== 'String') { %>.toString()<% } %>).forEach(response::header);
+        return response.build();
+    }

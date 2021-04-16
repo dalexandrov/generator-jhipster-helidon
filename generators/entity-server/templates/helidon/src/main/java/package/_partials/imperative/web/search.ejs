@@ -1,0 +1,17 @@
+
+    /**
+     * {@code SEARCH  /_search/<%= entityApiUrl %>?query=:query} : search for the <%= entityInstance %> corresponding
+     * to the query.
+     *
+     * @param query the query of the <%= entityInstance %> search.
+    <%_ if (hasPagination) { _%>
+     * @param pageable the pagination information.
+       <%_ if (reactive) { _%>
+     * @param request a {@link ServerHttpRequest} request.
+        <%_ } _%>
+    <%_ } _%>
+     * @return the result of the search.
+     */
+    @GET
+    @Path("/_search/<%= entityApiUrl %>")
+<%- include('../common/search', this); -%>

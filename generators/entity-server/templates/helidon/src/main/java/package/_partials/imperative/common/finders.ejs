@@ -1,0 +1,42 @@
+
+<%_
+let finderPrefix = 'public' + (!viaRepository ? ' static'  : '');
+for (idx in relationships) {
+    if (relationships[idx].relationshipType === 'many-to-one' && relationships[idx].otherEntityName === 'user' && databaseType === 'sql') {
+_%>
+    <%= finderPrefix %> Query<<%= entityClass %>> findBy<%= relationships[idx].relationshipNameCapitalized %>IsCurrentUser() {
+        return find("select <%= entityInstance %> from <%= entityClass %> <%= entityInstance %> where <%= entityInstance %>.<%= relationships[idx].relationshipFieldName %>.login = ?#{principal.<% if (authenticationType === 'oauth2') { %>preferredUsername<% } else { %>username<% } %>}");
+    }
+<%_
+    }
+}
+_%>
+<%_
+if (fieldsContainOwnerManyToMany === true) {
+    if (databaseType === 'sql') {
+_%>
+    <%= finderPrefix %> Query<<%= entityClass %>> findAllWithEagerRelationships() {
+        return find("select distinct <%= entityInstance %> from <%= entityClass %> <%= entityInstance %><% for (idx in relationships) {
+            if (relationships[idx].relationshipType === 'many-to-many' && relationships[idx].ownerSide === true) { %> left join fetch <%= entityInstance %>.<%= relationships[idx].relationshipFieldNamePlural %><% } } %>");
+    }
+
+    <%= finderPrefix %> Optional<<%= entityClass %>> findOneWithEagerRelationships(<%= primaryKeyType %> id) {
+        return find("select <%= entityInstance %> from <%= entityClass %> <%= entityInstance %><% for (idx in relationships) {
+            if (relationships[idx].relationshipType === 'many-to-many' && relationships[idx].ownerSide === true) { %> left join fetch <%= entityInstance %>.<%= relationships[idx].relationshipFieldNamePlural %><% } } %> where <%= entityInstance %>.id =?1", id).firstResultOptional();
+    }
+<%_
+    } else if (databaseType === 'mongodb')  {
+_%>
+    @Query("<%= (databaseType === 'mongodb') ? '{}' : '#{#n1ql.selectEntity} WHERE #{#n1ql.filter}' %>")
+    Page<<%= entityClass %>> findAllWithEagerRelationships(Pageable pageable);
+
+    @Query("<%= (databaseType === 'mongodb') ? '{}' : '#{#n1ql.selectEntity} WHERE #{#n1ql.filter}' %>")
+    List<<%= entityClass %>> findAllWithEagerRelationships();
+
+    @Query("<%- (databaseType === 'mongodb') ? "{'id': ?0}" : "#{#n1ql.selectEntity} USE KEYS $1 WHERE #{#n1ql.filter}" %>")
+    Optional<<%= entityClass %>> findOneWithEagerRelationships(<%= primaryKeyType %> id);
+<%_
+    }
+}
+_%>
+

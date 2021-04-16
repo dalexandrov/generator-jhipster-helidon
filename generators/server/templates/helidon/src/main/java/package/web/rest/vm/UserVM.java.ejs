@@ -1,0 +1,37 @@
+
+package <%=packageName%>.web.rest.vm;
+
+import java.time.Instant;
+import java.util.Set;
+
+/**
+ * View Model to represent IdP User.
+ */
+public class UserVM {
+
+    public String id;
+
+    public String login;
+
+    public String firstName;
+
+    public String lastName;
+
+    public String email;
+
+    public String imageUrl;
+
+    public boolean activated = false;
+
+    public String langKey;
+
+    public String createdBy;
+
+    public Instant createdDate;
+
+    public String lastModifiedBy;
+
+    public Instant lastModifiedDate;
+
+    public Set<String> authorities;
+}

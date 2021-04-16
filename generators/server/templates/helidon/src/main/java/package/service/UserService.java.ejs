@@ -1,0 +1,310 @@
+
+package <%=packageName%>.service;
+
+import <%=packageName%>.config.Constants;
+import <%=packageName%>.domain.Authority;
+import <%=packageName%>.domain.User;
+<%_ if (authenticationType === 'jwt') { _%>
+import <%=packageName%>.security.AuthoritiesConstants;
+import <%=packageName%>.security.BCryptPasswordHasher;
+import <%=packageName%>.security.RandomUtil;
+<%_ } _%>
+import <%=packageName%>.service.dto.UserDTO;
+import java.time.Instant;
+<%_ if (cacheManagerIsAvailable) { _%>
+import java.util.ArrayList;
+<%_ } _%>
+<%_ if (authenticationType === 'jwt') { _%>
+import java.util.HashSet;
+<%_ } _%>
+import java.util.List;
+import java.util.Optional;
+<%_ if (authenticationType === 'jwt') { _%>
+import java.util.Set;
+<%_ } _%>
+import java.util.stream.Collectors;
+import javax.enterprise.context.ApplicationScoped;
+<%_ if (authenticationType === 'jwt') { _%>
+import javax.inject.Inject;
+<%_ } _%>
+import javax.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@ApplicationScoped
+@Transactional
+public class UserService {
+    private final Logger log = LoggerFactory.getLogger(UserService.class);
+
+<%_ if (authenticationType === 'jwt') { _%>
+
+    final BCryptPasswordHasher passwordHasher;
+
+
+    @Inject
+    public UserService(BCryptPasswordHasher passwordHasher) {
+        this.passwordHasher = passwordHasher;
+    }
+
+    public Optional<User> activateRegistration(String key) {
+        log.debug("Activating user for activation key {}", key);
+        return User
+            .findOneByActivationKey(key)
+            .map(
+                user -> {
+                    // activate given user for the registration key.
+                    user.activated = true;
+                    user.activationKey = null;
+                    log.debug("Activated user: {}", user);
+                    return user;
+                }
+            );
+    }
+
+    public void changePassword(String login, String currentClearTextPassword, String newPassword) {
+        User
+            .findOneByLogin(login)
+            .ifPresent(
+                user -> {
+                    String currentEncryptedPassword = user.password;
+                    if (!passwordHasher.checkPassword(currentClearTextPassword, currentEncryptedPassword)) {
+                        throw new InvalidPasswordException();
+                    }
+                    user.password = passwordHasher.hash(newPassword);
+                    <%_ if (cacheManagerIsAvailable) { _%>
+                    this.clearUserCaches(user);
+                    <%_ } _%>
+                    log.debug("Changed password for User: {}", user);
+                }
+            );
+    }
+
+    public Optional<User> completePasswordReset(String newPassword, String key) {
+        log.debug("Reset user password for reset key {}", key);
+        return User
+            .findOneByResetKey(key)
+            .filter(user -> user.resetDate.isAfter(Instant.now().minusSeconds(86400)))
+            .map(
+                user -> {
+                    user.password = passwordHasher.hash(newPassword);
+                    user.resetKey = null;
+                    user.resetDate = null;
+                    <%_ if (cacheManagerIsAvailable) { _%>
+                    this.clearUserCaches(user);
+                    <%_ } _%>
+                    return user;
+                }
+            );
+    }
+
+    public Optional<User> requestPasswordReset(String mail) {
+        return User
+            .findOneByEmailIgnoreCase(mail)
+            .filter(user -> user.activated)
+            .map(
+                user -> {
+                    user.resetKey = RandomUtil.generateResetKey();
+                    user.resetDate = Instant.now();
+                    <%_ if (cacheManagerIsAvailable) { _%>
+                    this.clearUserCaches(user);
+                    <%_ } _%>
+                    return user;
+                }
+            );
+    }
+
+    public User registerUser(UserDTO userDTO, String password) {
+        User
+            .findOneByLogin(userDTO.login.toLowerCase())
+            .ifPresent(
+                existingUser -> {
+                    var removed = removeNonActivatedUser(existingUser);
+                    if (!removed) {
+                        throw new UsernameAlreadyUsedException();
+                    }
+                }
+            );
+        User
+            .findOneByEmailIgnoreCase(userDTO.email)
+            .ifPresent(
+                existingUser -> {
+                    var removed = removeNonActivatedUser(existingUser);
+                    if (!removed) {
+                        throw new EmailAlreadyUsedException();
+                    }
+                }
+            );
+        var newUser = new User();
+        newUser.login = userDTO.login.toLowerCase();
+        // new user gets initially a generated password
+        newUser.password = passwordHasher.hash(password);
+        newUser.firstName = userDTO.firstName;
+        newUser.lastName = userDTO.lastName;
+        if (userDTO.email != null) {
+            newUser.email = userDTO.email.toLowerCase();
+        }
+        newUser.imageUrl = userDTO.imageUrl;
+        newUser.langKey = userDTO.langKey;
+        // new user is not active
+        newUser.activated = false;
+        // new user gets registration key
+        newUser.activationKey = RandomUtil.generateActivationKey();
+        Set<Authority> authorities = new HashSet<>();
+        Authority.<Authority>findByIdOptional(AuthoritiesConstants.USER).ifPresent(authorities::add);
+        newUser.authorities = authorities;
+        User.persist(newUser);
+        <%_ if (cacheManagerIsAvailable) { _%>
+        this.clearUserCaches(newUser);
+        <%_ } _%>
+        log.debug("Created Information for User: {}", newUser);
+        return newUser;
+    }
+
+    private boolean removeNonActivatedUser(User existingUser) {
+        if (existingUser.activated) {
+            return false;
+        }
+        User.delete("id", existingUser.id);
+        <%_ if (cacheManagerIsAvailable) { _%>
+        this.clearUserCaches(existingUser);
+        <%_ } _%>
+        return true;
+    }
+
+    public User createUser(UserDTO userDTO) {
+        User user = new User();
+        user.login = userDTO.login.toLowerCase();
+        user.firstName = userDTO.firstName;
+        user.lastName = userDTO.lastName;
+        if (userDTO.email != null) {
+            user.email = userDTO.email.toLowerCase();
+        }
+        user.imageUrl = userDTO.imageUrl;
+        if (userDTO.langKey == null) {
+            user.langKey = Constants.DEFAULT_LANGUAGE; // default language
+        } else {
+            user.langKey = userDTO.langKey;
+        }
+        user.password = passwordHasher.hash(RandomUtil.generatePassword());
+        user.resetKey = RandomUtil.generateResetKey();
+        user.resetDate = Instant.now();
+        user.activated = true;
+        if (userDTO.authorities != null) {
+            user.authorities = userDTO
+                .authorities.stream()
+                .map(authority -> Authority.<Authority>findByIdOptional(authority))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toSet());
+        }
+        User.persist(user);
+        <%_ if (cacheManagerIsAvailable) { _%>
+        this.clearUserCaches(user);
+        <%_ } _%>
+        log.debug("Created Information for User: {}", user);
+        return user;
+    }
+
+    public void deleteUser(String login) {
+        User
+            .findOneByLogin(login)
+            .ifPresent(
+                user -> {
+                    User.delete("id", user.id);
+                    <%_ if (cacheManagerIsAvailable) { _%>
+                    this.clearUserCaches(user);
+                    <%_ } _%>
+                    <%_ if (databaseType === 'mongodb') { _%>
+                    user.update();
+                    <%_ } _%>
+                    log.debug("Deleted User: {}", user);
+                }
+            );
+    }
+
+    /**
+     * Update all information for a specific user, and return the modified user.
+     *
+     * @param userDTO user to update.
+     * @return updated user.
+     */
+    public Optional<UserDTO> updateUser(UserDTO userDTO) {
+        return User
+            .<User>findByIdOptional(userDTO.id)
+            .map(
+                user -> {
+                    user.login = userDTO.login.toLowerCase();
+                    user.firstName = userDTO.firstName;
+                    user.lastName = userDTO.lastName;
+                    if (userDTO.email != null) {
+                        user.email = userDTO.email.toLowerCase();
+                    }
+                    user.imageUrl = userDTO.imageUrl;
+                    user.activated = userDTO.activated;
+                    user.langKey = userDTO.langKey;
+                    Set<Authority> managedAuthorities = user.authorities;
+                    managedAuthorities.clear();
+                    userDTO
+                        .authorities.stream()
+                        .map(authority -> Authority.<Authority>findByIdOptional(authority))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .forEach(managedAuthorities::add);
+                    <%_ if (cacheManagerIsAvailable) { _%>
+                    this.clearUserCaches(user);
+                    <%_ } _%>
+                    <%_ if (databaseType === 'mongodb') { _%>
+                    user.update();
+                    <%_ } _%>
+                    log.debug("Changed Information for User: {}", user);
+                    return user;
+                }
+            )
+            .map(UserDTO::new);
+    }
+
+<%_ } _%>
+    /**
+     * Update basic information (first name, last name, email, language) for the current user.
+     *
+     * @param login     the login to find the user to update.
+     * @param firstName first name of user.
+     * @param lastName  last name of user.
+     * @param email     email id of user.
+     * @param langKey   language key.
+     * @param imageUrl  image URL of user.
+     */
+    public void updateUser(String login, String firstName, String lastName, String email, String langKey, String imageUrl) {
+        User
+            .findOneByLogin(login)
+            .ifPresent(
+                user -> {
+                    user.firstName = firstName;
+                    user.lastName = lastName;
+                    if (email != null) {
+                        user.email = email.toLowerCase();
+                    }
+                    user.langKey = langKey;
+                    user.imageUrl = imageUrl;
+                    <%_ if (cacheManagerIsAvailable) { _%>
+                    this.clearUserCaches(user);
+                    <%_ } _%>
+                    log.debug("Changed Information for User: {}", user);
+                }
+            );
+    }
+
+    public Optional<User> getUserWithAuthoritiesByLogin(String login) {
+        return User.findOneWithAuthoritiesByLogin(login);
+
+    }
+
+    public List<UserDTO> getAllManagedUsers() {
+        return User.findAllByLoginNot(Page.ofSize(20), Constants.ANONYMOUS_USER).stream().map(UserDTO::new).collect(Collectors.toList());
+    }
+
+    public List<String> getAuthorities() {
+        return Authority.<Authority>streamAll().map(authority -> authority.name).collect(Collectors.toList());
+    }
+
+}
