@@ -79,7 +79,6 @@ module.exports = class extends EntityServerGenerator {
                 this.hasServiceImpl = this.service === 'serviceImpl';
                 this.viaRepository = this.dataAccess === 'repository';
                 this.hasDto = this.dto === 'mapstruct';
-                this.hasPagination = this.pagination !== 'no';
 
                 this.mapsIdAssoc = undefined;
                 this.primaryKeyType = this.pkType;

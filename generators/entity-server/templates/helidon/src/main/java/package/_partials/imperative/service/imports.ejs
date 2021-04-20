@@ -3,9 +3,6 @@
 import <%= packageName %>.service.<%= entityClass %>Service;
 <%_ } _%>
 
-<%_ if (hasServiceImpl) { _%>
-import <%= packageName %>.service.Paged;
-    <%_ } _%>
 <%_ } _%>
 import <%= packageName %>.domain.<%= entityClass %>;
 <%_ if (viaRepository) { _%>

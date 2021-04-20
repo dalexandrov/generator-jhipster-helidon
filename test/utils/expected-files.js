@@ -73,7 +73,6 @@ const expectedFiles = {
             `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/service/AuthenticationService.java`,
             `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/service/EmailAlreadyUsedException.java`,
             `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/service/InvalidPasswordException.java`,
-            `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/service/MailService.java`,
             `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/service/UsernameAlreadyUsedException.java`,
             `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/service/UserService.java`,
             `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/web/rest/errors/EmailAlreadyUsedException.java`,
@@ -84,7 +83,6 @@ const expectedFiles = {
             `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/web/rest/vm/ManagedUserVM.java`,
             `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/web/rest/UserResource.java`,
             `${SERVER_TEST_SRC_DIR}com/mycompany/myapp/web/rest/UserResourceTest.java`,
-            `${SERVER_TEST_SRC_DIR}com/mycompany/myapp/service/MailServiceIT.java`,
             `${SERVER_TEST_SRC_DIR}com/mycompany/myapp/service/mapper/UserMapperTest.java`,
         ],
 

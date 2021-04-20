@@ -6,17 +6,11 @@ import <%= packageName %>.service.dto.<%= entityOrDtoClass %>;
 <%_ } else { _%>
 import <%= packageName %>.domain.<%= entityOrDtoClass %>;
 <%_ } _%>
-<%_ if (hasPagination) { _%>
-///
-<%_ } _%>
 
-<%_ if (!hasPagination || fieldsContainNoOwnerOneToOne === true) { _%>
+<%_ if (fieldsContainNoOwnerOneToOne === true) { _%>
 import java.util.List;
 <%_ } _%>
 import java.util.Optional;
-<%_ if (databaseType === 'cassandra') { _%>
-import java.util.UUID;
-<%_ } _%>
 
 /**
  * Service Interface for managing {@link <%= packageName %>.domain.<%= entityClass %>}.
@@ -40,11 +34,9 @@ public interface <%= entityClass %>Service {
 
     /**
      * Get all the <%= entityInstancePlural %>.
-    <%_ if (hasPagination) { _%>
-    <%_ } _%>
      * @return the list of entities.
      */
-    public <% if(hasPagination) { %>Paged<<%= entityOrDtoClass %>><% } else { %> List<<%= entityOrDtoClass %>><% } %> findAll(<% if(hasPagination) { %>Page page<% } %>);
+    public List<<%= entityOrDtoClass %>> findAll();
 
     /**
      * Get the "id" <%= entityOrDtoInstance %>.
@@ -68,12 +60,9 @@ public interface <%= entityClass %>Service {
     <%_ if (fieldsContainOwnerManyToMany === true) { _%>
     /**
      * Get all the <%= entityInstancePlural %> with eager load of many-to-many relationships.
-    <%_ if (hasPagination) { _%>
-
-    <%_ } _%>
      * @return the list of entities.
     */
-    public <% if(hasPagination) { %>Paged<<%= entityOrDtoClass %>><% } else { %> List<<%= entityOrDtoClass %>><% } %> findAllWithEagerRelationships(<% if(hasPagination) { %>Page page<% } %>);
+    public List<<%= entityOrDtoClass %>> findAllWithEagerRelationships();
 
     <%_ } _%>
 

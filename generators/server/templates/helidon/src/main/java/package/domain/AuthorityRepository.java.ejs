@@ -1,0 +1,34 @@
+package <%=packageName%>.domain;
+
+import java.util.Optional;
+import java.util.stream.Stream;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+
+@ApplicationScoped
+public class AuthorityRepository {
+
+    @Inject
+    private EntityManager em;
+
+    public void persist(Authority authority) {
+        em.persist(authority);
+    }
+
+    public void delete(Long id){
+        em.remove(id);
+    }
+
+    public void update(Authority authority){
+        em.refresh(authority);
+    }
+
+    public Optional<Authority> findByNameOptional(String name){
+        return Optional.of(em.createQuery("SELECT a FROM Authority a WHERE a.name = " + name, Authority.class).getSingleResult());
+    }
+
+    public Stream<Authority> streamAll(){
+        return em.createQuery("SELECT a FROM Authority a").getResultList().stream();
+    }
+}

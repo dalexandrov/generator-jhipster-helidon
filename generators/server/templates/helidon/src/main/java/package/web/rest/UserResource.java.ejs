@@ -4,9 +4,9 @@ package <%=packageName%>.web.rest;
 import static javax.ws.rs.core.UriBuilder.fromPath;
 
 import <%=packageName%>.domain.User;
+import <%=packageName%>.domain.UserRepository;
 <%_ if (authenticationType === 'jwt') { _%>
 import <%=packageName%>.security.AuthoritiesConstants;
-import <%=packageName%>.service.MailService;
 <%_ } _%>
 import <%=packageName%>.service.UserService;
 import <%=packageName%>.service.dto.UserDTO;
@@ -72,32 +72,31 @@ public class UserResource {
 
     final String applicationName;
 
-    final MailService mailService;
 
 <%_ } _%>
     final UserService userService;
+
+    final UserRepository userRepository;
 
     @Inject
     public UserResource(
 <%_ if (authenticationType !== 'oauth2') { _%>
         @ConfigProperty(name = "application.name") String applicationName,
-        MailService mailService,
 <%_ } _%>
-        UserService userService
+        UserService userService, UserRepository userRepository
     ) {
 <%_ if (authenticationType !== 'oauth2') { _%>
         this.applicationName = applicationName;
-        this.mailService = mailService;
 <%_ } _%>
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
 <%_ if (authenticationType !== 'oauth2') { _%>
     /**
      * {@code POST  /users}  : Creates a new user.
      * <p>
-     * Creates a new user if the login and email are not already used, and sends an
-     * mail with an activation link.
+     * Creates a new user if the login and email are not already used
      * The user needs to be activated on creation.
      *
      * @param userDTO the user to create.
@@ -112,13 +111,12 @@ public class UserResource {
         if (userDTO.id != null) {
             throw new BadRequestAlertException("A new user cannot already have an ID", "userManagement", "idexists");
             // Lowercase the user login before comparing with database
-        } else if (User.findOneByLogin(userDTO.login.toLowerCase()).isPresent()) {
+        } else if (userRepository.findOneByLogin(userDTO.login.toLowerCase()).isPresent()) {
             throw new LoginAlreadyUsedException();
-        } else if (User.findOneByEmailIgnoreCase(userDTO.email).isPresent()) {
+        } else if (userRepository.findOneByEmailIgnoreCase(userDTO.email).isPresent()) {
             throw new EmailAlreadyUsedException();
         } else {
             var newUser = userService.createUser(userDTO);
-            mailService.sendCreationEmail(newUser);
             Response.ResponseBuilder response = Response.created(fromPath("/api/users").path(newUser.login).build()).entity(newUser);
             HeaderUtil.createAlert(applicationName, "userManagement.created", newUser.login).forEach(response::header);
             return response.build();
@@ -137,11 +135,11 @@ public class UserResource {
     @RolesAllowed(AuthoritiesConstants.ADMIN)
     public Response updateUser(@Valid UserDTO userDTO) {
         log.debug("REST request to update User : {}", userDTO);
-        Optional<User> existingUser = User.findOneByEmailIgnoreCase(userDTO.email);
+        Optional<User> existingUser = userRepository.findOneByEmailIgnoreCase(userDTO.email);
         if (existingUser.isPresent() && (!existingUser.get().id.equals(userDTO.id))) {
             throw new EmailAlreadyUsedException();
         }
-        existingUser = User.findOneByLogin(userDTO.login.toLowerCase());
+        existingUser = userRepository.findOneByLogin(userDTO.login.toLowerCase());
         if (existingUser.isPresent() && (!existingUser.get().id.equals(userDTO.id))) {
             throw new LoginAlreadyUsedException();
         }

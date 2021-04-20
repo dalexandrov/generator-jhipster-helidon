@@ -228,54 +228,5 @@ public class User implements Serializable {
             "}"
         );
     }
-
-<%_ if (['sql', 'mongodb'].includes(databaseType)  && authenticationType !== 'oauth2') { _%>
-    public static Optional<User> findOneByActivationKey(String activationKey) {
-        return find("activationKey", activationKey).firstResultOptional();
-    }
-
-    public static List<User> findAllByActivatedIsFalseAndActivationKeyIsNotNullAndCreatedDateBefore(Instant dateTime) {
-        return list("activated = false and activationKey not null and createdDate <= ?1", dateTime);
-    }
-
-    public static Optional<User> findOneByResetKey(String resetKey) {
-        return find("resetKey", resetKey).firstResultOptional();
-    }
-
-<%_ } _%>
-    public static Optional<User> findOneByEmailIgnoreCase(String email) {
-        <%_ if (databaseType === 'sql') { _%>
-        return find("LOWER(email) = LOWER(?1)", email).firstResultOptional();
-        <%_ } else if (databaseType === 'mongodb') { _%>
-
-        <%_ } _%>
-    }
-
-    public static Optional<User> findOneByLogin(String login) {
-        return find("login", login).firstResultOptional();
-    }
-
-    public static Optional<User> findOneWithAuthoritiesById(Long id) {
-        return find("FROM User u LEFT JOIN FETCH u.authorities WHERE u.id = ?1", id).firstResultOptional();
-    }
-
-
-    public static Optional<User> findOneWithAuthoritiesByLogin(String login) {
-        <%_ if (databaseType === 'sql') { _%>
-        return find("FROM User u LEFT JOIN FETCH u.authorities WHERE u.login = ?1", login)
-        <%_ } else if (databaseType === 'mongodb') { _%>
-
-        <%_ } _%>
-            .firstResultOptional();
-    }
-
-    public static Optional<User> findOneWithAuthoritiesByEmailIgnoreCase(String email) {
-        return find("FROM User u LEFT JOIN FETCH u.authorities WHERE LOWER(u.login) = LOWER(?1)", email)
-            .firstResultOptional();
-    }
-
-    public static List<User> findAllByLoginNot(Page page, String login) {
-        return find("login != ?1", login).page(page).list();
-    }
 <%_ } _%>
 }

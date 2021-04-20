@@ -1,0 +1,70 @@
+package <%=packageName%>.domain;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+
+@ApplicationScoped
+public class UserRepository {
+
+    @Inject
+    private EntityManager em;
+
+    public void persist(User user) {
+        em.persist(user);
+    }
+
+    public void delete(Long id){
+        em.remove(id);
+    }
+
+    public void update(User user){
+        em.refresh(user);
+    }
+
+    public Optional<User> findOneByActivationKey(String activationKey) {
+        return Optional.of(em.createQuery("FROM User u WHERE u.activationKey= " + activationKey, User.class).getSingleResult());
+    }
+
+    public List<User> findAllByActivatedIsFalseAndActivationKeyIsNotNullAndCreatedDateBefore(Instant dateTime) {
+        return em.createQuery("FROM User u WHERE u.activated = false and u.activationKey not null and u.createdDate <= " + dateTime.toString(), User.class).getResultList();
+    }
+
+    public Optional<User> findOneByResetKey(String resetKey) {
+        return Optional.of(em.createQuery("FROM User u WHERE u.resetKey = " + resetKey, User.class).getSingleResult());
+    }
+
+    public Optional<User> findOneByEmailIgnoreCase(String email) {
+        return Optional.of(em.createQuery("FROM User u WHERE LOWER(u.email) = LOWER(" + email + ")",User.class).getSingleResult());
+    }
+
+    public Optional<User> findOneByLogin(String login) {
+        return Optional.of(em.createQuery("FROM User u WHERE u.login =" + login, User.class).getSingleResult());
+    }
+
+    public Optional<User> findOneWithAuthoritiesById(Long id) {
+        return Optional.of(em.createQuery("FROM User u LEFT JOIN FETCH u.authorities WHERE u.id = " + id, User.class).getSingleResult());
+    }
+
+
+    public Optional<User> findOneWithAuthoritiesByLogin(String login) {
+        return Optional.of(em.createQuery("FROM User u LEFT JOIN FETCH u.authorities WHERE u.login = ?" + login, User.class).getSingleResult());
+
+    }
+
+    public Optional<User> findOneWithAuthoritiesByEmailIgnoreCase(String email) {
+        return Optional.of(em.createQuery("FROM User u LEFT JOIN FETCH u.authorities WHERE LOWER(u.login) = LOWER(?" + email + ")", User.class)
+            .getSingleResult());
+    }
+
+    public List<User> findAllByLoginNot(String login) {
+        return em.createQuery("FROM User u WHERE u.login != ?" + login).getResultList();
+    }
+
+    public Optional<User> findByIdOptional(Long id) {
+        return Optional.of(em.createQuery("FROM User u WHERE u.id = " + id, User.class).getSingleResult());
+    }
+}

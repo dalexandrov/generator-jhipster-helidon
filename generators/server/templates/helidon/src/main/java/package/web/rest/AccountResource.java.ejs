@@ -5,9 +5,8 @@ package <%=packageName%>.web.rest;
 import <%=packageName%>.config.Constants;
 <%_ } _%>
 <%_ if (authenticationType === 'jwt') { _%>
-import <%=packageName%>.domain.User;
+import <%=packageName%>.domain.UserRepository;
 import <%=packageName%>.service.InvalidPasswordException;
-import <%=packageName%>.service.MailService;
 import <%=packageName%>.service.UserService;
 import <%=packageName%>.service.UsernameAlreadyUsedException;
 import <%=packageName%>.service.dto.PasswordChangeDTO;
@@ -26,6 +25,7 @@ import <%=packageName%>.web.rest.vm.UserVM;
 import java.security.Principal;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.CompletableFuture;
 <%_ } _%>
 <%_ if (!skipUserManagement) { _%>
 import javax.annotation.security.PermitAll;
@@ -52,6 +52,9 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+import io.helidon.security.annotations.Authenticated;
+
 /**
  * REST controller for managing the current user's account.
  */
@@ -70,14 +73,15 @@ public class AccountResource {
     }
 
 <%_ if (authenticationType === 'jwt') { _%>
-    final MailService mailService;
 
     final UserService userService;
 
+    final UserRepository userRepository;
+
     @Inject
-    public AccountResource(MailService mailService, UserService userService) {
-        this.mailService = mailService;
+    public AccountResource(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -180,11 +184,11 @@ public class AccountResource {
         var userLogin = Optional
             .ofNullable(ctx.getUserPrincipal().getName())
             .orElseThrow(() -> new AccountResourceException("Current user login not found"));
-        var existingUser = User.findOneByEmailIgnoreCase(userDTO.email);
+        var existingUser = userRepository.findOneByEmailIgnoreCase(userDTO.email);
         if (existingUser.isPresent() && (!existingUser.get().login.equalsIgnoreCase(userLogin))) {
             throw new EmailAlreadyUsedException();
         }
-        var user = User.findOneByLogin(userLogin);
+        var user = userRepository.findOneByLogin(userLogin);
         if (!user.isPresent()) {
             throw new AccountResourceException("User could not be found");
         }
@@ -209,7 +213,7 @@ public class AccountResource {
         }
         try {
             var user = userService.registerUser(managedUserVM, managedUserVM.password);
-            return mailService.sendActivationEmail(user).thenApply(it -> Response.created(null).build());
+            return CompletableFuture.supplyAsync(()->Response.created(null).build());
         } catch (UsernameAlreadyUsedException e) {
             throw new LoginAlreadyUsedException();
         } catch (<%= packageName %>.service.EmailAlreadyUsedException e) {
@@ -277,7 +281,7 @@ public class AccountResource {
     @Path("/account/reset-password/init")
     @Consumes(MediaType.TEXT_PLAIN)
     public Response requestPasswordReset(String mail) {
-        mailService.sendPasswordResetMail(userService.requestPasswordReset(mail).orElseThrow(EmailNotFoundException::new));
+        //mailService.sendPasswordResetMail(userService.requestPasswordReset(mail).orElseThrow(EmailNotFoundException::new));
         return Response.ok().build();
     }
 

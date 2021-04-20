@@ -1,57 +1,35 @@
 
     /**
      * Get all the <%= entityInstancePlural %>.
-    <%_ if (hasPagination) { _%>
-     * @param page the pagination information.
-    <%_ } _%>
-     * @return the list of entities.
-     */
     <%_ if (hasServiceImpl) { _%>
     @Override
     <%_ } _%>
     <%_ if (databaseType === 'sql' && isUsingMapsId === true) { _%>
     @Transactional(readOnly = true)
     <%_ } _%>
-    public <% if(hasPagination) { %>Paged<<%= entityOrDtoClass %>><% } else { %> List<<%= entityOrDtoClass %>><% } %> findAll(<% if(hasPagination) { %>Page page<% } %>) {
+    public List<<%= entityOrDtoClass %>> findAll() {
         log.debug("Request to get all <%= entityClassPlural %>");
-        <%_ if(hasPagination) { _%>
-        return new Paged<>(<%= dataAccessObject %>.findAll().page(page))<% if(!hasDto) { %>;<% } else { %>
-            .map(<%= entityInstance %> -> <%= mapper %>.toDto((<%= entityClass %>) <%= entityInstance %>));
-            <%_ } _%>
-        <%_ } else { _%>
             <%_ if(hasDto) { _%>
         List<<%=entityClass %>> <%= entityInstancePlural %> = <%= dataAccessObject %>.<% if (fieldsContainOwnerManyToMany) { %>findAllWithEagerRelationships()<% } else { %>findAll()<% } %>.list();
         return <%= mapper %>.toDto(<%= entityInstancePlural %>);
             <%_ } else { _%>
             return <%= dataAccessObject %>.<% if (fieldsContainOwnerManyToMany) { %>findAllWithEagerRelationships()<% } else { %>findAll()<% } %>.list();
             <%_ } _%>
-        <%_ } _%>
     }
 
     <%_ if (fieldsContainOwnerManyToMany === true) { _%>
 
     /**
      * Get all the <%= entityInstancePlural %> with eager load of many-to-many relationships.
-    <%_ if (hasPagination) { _%>
-     * @param page the pagination information.
-    <%_ } _%>
      * @return the list of entities.
      */
-    public <% if(hasPagination) { %>Paged<<%= entityOrDtoClass %>><% } else { %> List<<%= entityOrDtoClass %>><% } %> findAllWithEagerRelationships(<% if(hasPagination) { %>Page page<% } %>) {
-        <%_ if(hasPagination) { _%>
-        var <%= entityInstancePlural %> = <%= dataAccessObject %>.findAllWithEagerRelationships().page(page).list();
-        var totalCount = <%= dataAccessObject %>.findAll().count();
-        var pageCount = <%= dataAccessObject %>.findAll().page(page).pageCount();
-        return new Paged<>(page.index, page.size, totalCount, pageCount, <%= entityInstancePlural %>)<% if(!hasDto) { %>;<% } else { %>
-            .map(<%= entityInstance %> -> <%= mapper %>.toDto((<%= entityClass %>) <%= entityInstance %>));
-            <%_ } _%>
-        <%_ } else { _%>
+    public List<<%= entityOrDtoClass %>> findAllWithEagerRelationships() {
             <%_ if(hasDto) { _%>
         List<<%=entityClass %>> = <%= dataAccessObject %>.findAllWithEagerRelationships().list();
         return <%= mapper %>.toDto();
             <%_ } else {_%>
         return <%= dataAccessObject %>.findAllWithEagerRelationships().list();
             <%_ } _%>
-        <%_ } _%>
+
     }
     <%_ } _%>

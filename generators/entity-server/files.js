@@ -88,44 +88,6 @@ const serverFiles = {
             ],
         },
         {
-            condition: generator => generator.hasPagination,
-            path: SERVER_MAIN_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/service/Paged.java',
-                    renameTo: generator => `${generator.packageFolder}/service/Paged.java`,
-                    useBluePrint: true,
-                },
-            ],
-        },
-        {
-            condition: generator => generator.hasPagination,
-            path: SERVER_MAIN_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/web/rest/vm/PageRequestVM.java',
-                    renameTo: generator => `${generator.packageFolder}/web/rest/vm/PageRequestVM.java`,
-                    useBluePrint: true,
-                },
-                {
-                    file: 'package/web/rest/vm/SortRequestVM.java',
-                    renameTo: generator => `${generator.packageFolder}/web/rest/vm/SortRequestVM.java`,
-                    useBluePrint: true,
-                },
-            ],
-        },
-        {
-            condition: generator => generator.hasPagination,
-            path: SERVER_MAIN_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/web/util/PaginationUtil.java',
-                    renameTo: generator => `${generator.packageFolder}/web/util/PaginationUtil.java`,
-                    useBluePrint: true,
-                },
-            ],
-        },
-        {
             path: SERVER_TEST_SRC_DIR,
             templates: [
                 {

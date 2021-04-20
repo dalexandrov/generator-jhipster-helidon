@@ -63,7 +63,6 @@ import <%=packageName%>.domain.enumeration.<%= element %>;
 <%_ if (typeof javadoc !== 'undefined') { _%>
 @ApiModel(description = "<%- formatAsApiDescription(javadoc) %>")
 <%_ } _%>
-@RegisterForReflection
 public class <%= asDto(entityClass) %> implements Serializable {
     <% if (!embedded) { %>
     public <%= primaryKeyType %> id;

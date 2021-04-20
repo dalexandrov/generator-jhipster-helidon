@@ -27,8 +27,6 @@ _%>
 <%_
     } else if (databaseType === 'mongodb')  {
 _%>
-    @Query("<%= (databaseType === 'mongodb') ? '{}' : '#{#n1ql.selectEntity} WHERE #{#n1ql.filter}' %>")
-    Page<<%= entityClass %>> findAllWithEagerRelationships(Pageable pageable);
 
     @Query("<%= (databaseType === 'mongodb') ? '{}' : '#{#n1ql.selectEntity} WHERE #{#n1ql.filter}' %>")
     List<<%= entityClass %>> findAllWithEagerRelationships();

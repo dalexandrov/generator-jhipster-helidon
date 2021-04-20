@@ -170,8 +170,16 @@ const serverFiles = {
                     renameTo: generator => `${generator.javaDir}domain/Authority.java`,
                 },
                 {
+                    file: 'package/domain/AuthorityRepository.java',
+                    renameTo: generator => `${generator.javaDir}domain/AuthorityRepository.java`,
+                },
+                {
                     file: 'package/domain/User.java',
                     renameTo: generator => `${generator.javaDir}domain/User.java`,
+                },
+                {
+                    file: 'package/domain/UserRepository.java',
+                    renameTo: generator => `${generator.javaDir}domain/UserRepository.java`,
                 },
             ],
         },
@@ -280,10 +288,6 @@ const serverFiles = {
                     renameTo: generator => `${generator.javaDir}service/InvalidPasswordException.java`,
                 },
                 {
-                    file: 'package/service/MailService.java',
-                    renameTo: generator => `${generator.javaDir}service/MailService.java`,
-                },
-                {
                     file: 'package/service/ManagementInfoService.java',
                     renameTo: generator => `${generator.javaDir}service/ManagementInfoService.java`,
                 },
@@ -295,20 +299,12 @@ const serverFiles = {
                     file: 'package/service/UserService.java',
                     renameTo: generator => `${generator.javaDir}service/UserService.java`,
                 },
-                {
-                    file: 'package/service/MailService.java',
-                    renameTo: generator => `${generator.javaDir}service/MailService.java`,
-                },
             ],
         },
         {
             condition: generator => !generator.skipUserManagement,
             path: SERVER_TEST_SRC_DIR,
             templates: [
-                {
-                    file: 'package/service/MailServiceIT.java',
-                    renameTo: generator => `${generator.javaDir}/service/MailServiceIT.java`,
-                },
                 {
                     file: 'package/service/mapper/UserMapperTest.java',
                     renameTo: generator => `${generator.javaDir}/service/mapper/UserMapperTest.java`,
