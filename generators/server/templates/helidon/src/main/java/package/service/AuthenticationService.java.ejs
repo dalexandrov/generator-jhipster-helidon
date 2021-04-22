@@ -2,12 +2,13 @@
 package <%=packageName%>.service;
 
 import <%=packageName%>.domain.User;
+import <%=packageName%>.domain.UserRepository;
 import <%=packageName%>.security.BCryptPasswordHasher;
+import <%=packageName%>.security.SecurityIdentity;
 import <%=packageName%>.security.UserNotActivatedException;
 import <%=packageName%>.security.UsernameNotFoundException;
 
 import java.util.Locale;
-import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.slf4j.Logger;
@@ -21,11 +22,13 @@ public class AuthenticationService {
         "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
     final BCryptPasswordHasher passwordHasher;
+    final UserRepository userRepository;
 
 
     @Inject
-    public AuthenticationService(BCryptPasswordHasher passwordHasher) {
+    public AuthenticationService(BCryptPasswordHasher passwordHasher, UserRepository userRepository) {
         this.passwordHasher = passwordHasher;
+        this.userRepository = userRepository;
     }
 
     public SecurityIdentity authenticate(String login, String password) {
@@ -37,7 +40,7 @@ public class AuthenticationService {
             return createSecurityIdentity(user);
         }
         log.debug("Authentication failed: password does not match stored value");
-        throw new AuthenticationFailedException("Authentication failed: password does not match stored value");
+        throw new RuntimeException("Authentication failed: password does not match stored value");
     }
 
     private User loadByUsername(String login) {
@@ -45,22 +48,18 @@ public class AuthenticationService {
 
         if (login.matches(emailValidator)) {
 
-            return User
+            return userRepository
                 .findOneWithAuthoritiesByEmailIgnoreCase(login)
                 .orElseThrow(() -> new UsernameNotFoundException("User with email " + login + " was not found in the database"));
         }
         String lowercaseLogin = login.toLowerCase(Locale.ENGLISH);
 
-        return User
+        return userRepository
             .findOneWithAuthoritiesByLogin(lowercaseLogin)
             .orElseThrow(() -> new UsernameNotFoundException("User " + lowercaseLogin + " was not found in the database"));
     }
 
     private SecurityIdentity createSecurityIdentity(User user) {
-        SecurityIdentity.Builder builder = SecurityIdentity.builder();
-        builder.setPrincipal(new Principal(user.login));
-        builder.addCredential(new PasswordCredential(user.password.toCharArray()));
-        builder.addRoles(user.authorities.stream().map(authority -> authority.name).collect(Collectors.toSet()));
-        return builder.build();
+        return new SecurityIdentity(user.login, user.password);
     }
 }

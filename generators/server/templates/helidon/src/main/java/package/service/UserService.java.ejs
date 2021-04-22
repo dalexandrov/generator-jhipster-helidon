@@ -69,7 +69,7 @@ public class UserService {
     }
 
     public void changePassword(String login, String currentClearTextPassword, String newPassword) {
-    userRepository
+        userRepository
             .findOneByLogin(login)
             .ifPresent(
                 user -> {
@@ -307,7 +307,7 @@ public class UserService {
     }
 
     public List<UserDTO> getAllManagedUsers() {
-        return userRepository.findAllByLoginNot(Page.ofSize(20), Constants.ANONYMOUS_USER).stream().map(UserDTO::new).collect(Collectors.toList());
+        return userRepository.findAllByLoginNot(Constants.ANONYMOUS_USER).stream().map(UserDTO::new).collect(Collectors.toList());
     }
 
     public List<String> getAuthorities() {

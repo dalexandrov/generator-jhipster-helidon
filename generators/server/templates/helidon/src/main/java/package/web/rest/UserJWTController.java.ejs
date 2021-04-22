@@ -1,6 +1,7 @@
 
 package <%=packageName%>.web.rest;
 
+import <%=packageName%>.security.SecurityIdentity;
 import <%=packageName%>.security.jwt.TokenProvider;
 import <%=packageName%>.service.AuthenticationService;
 import <%=packageName%>.web.rest.vm.LoginVM;
@@ -43,7 +44,7 @@ public class UserJWTController {
     @PermitAll
     public Response authorize(@Valid LoginVM loginVM) {
         try {
-            HelidonSecurityIdentity identity = authenticationService.authenticate(loginVM.username, loginVM.password);
+            SecurityIdentity identity = authenticationService.authenticate(loginVM.username, loginVM.password);
             boolean rememberMe = (loginVM.rememberMe == null) ? false : loginVM.rememberMe;
             String jwt = tokenProvider.createToken(identity, rememberMe);
             return Response.ok().entity(new JWTToken(jwt)).header("Authorization", "Bearer " + jwt).build();

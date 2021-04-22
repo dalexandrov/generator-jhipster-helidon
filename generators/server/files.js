@@ -6,7 +6,7 @@ const jhipsterFiles = require('generator-jhipster/generators/server/files').serv
 /* Constants use throughout */
 const INTERPOLATE_REGEX = constants.INTERPOLATE_REGEX;
 const DOCKER_DIR = constants.DOCKER_DIR;
-const { SERVER_MAIN_SRC_DIR, SERVER_MAIN_RES_DIR, SERVER_TEST_SRC_DIR, SERVER_TEST_RES_DIR } = constants;
+const { SERVER_MAIN_SRC_DIR, SERVER_MAIN_RES_DIR, SERVER_TEST_RES_DIR } = constants;
 
 const serverFiles = {
     serverBuild: [
@@ -47,50 +47,6 @@ const serverFiles = {
                 'templates/mail/activationEmail.html',
                 'templates/mail/creationEmail.html',
                 'templates/mail/passwordResetEmail.html',
-            ],
-        },
-    ],
-    serverTestSupport: [
-        {
-            path: SERVER_TEST_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/ArchTest.java',
-                    renameTo: generator => `${generator.javaDir}/ArchTest.java`,
-                },
-                {
-                    file: 'package/TestUtil.java',
-                    renameTo: generator => `${generator.javaDir}/TestUtil.java`,
-                },
-            ],
-        },
-        {
-            path: SERVER_TEST_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/TestResources.java',
-                    renameTo: generator => `${generator.javaDir}/TestResources.java`,
-                },
-            ],
-        },
-        {
-            condition: generator => generator.authenticationType === 'oauth2',
-            path: SERVER_TEST_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/MockOidcServerTestResource.java',
-                    renameTo: generator => `${generator.javaDir}/MockOidcServerTestResource.java`,
-                },
-            ],
-        },
-        {
-            condition: generator => generator.databaseType === 'mongodb',
-            path: SERVER_TEST_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/MongoDbTestResource.java',
-                    renameTo: generator => `${generator.javaDir}/MongoDbTestResource.java`,
-                },
             ],
         },
     ],
@@ -146,19 +102,6 @@ const serverFiles = {
                 },
             ],
         },
-        {
-            path: SERVER_TEST_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/config/mock/JHipsterInfoMock.java',
-                    renameTo: generator => `${generator.javaDir}/config/mock/JHipsterInfoMock.java`,
-                },
-                {
-                    file: 'package/config/LocalDateProviderTest.java',
-                    renameTo: generator => `${generator.javaDir}/config/LocalDateProviderTest.java`,
-                },
-            ],
-        },
     ],
     serverJavaDomain: [
         {
@@ -180,20 +123,6 @@ const serverFiles = {
                 {
                     file: 'package/domain/UserRepository.java',
                     renameTo: generator => `${generator.javaDir}domain/UserRepository.java`,
-                },
-            ],
-        },
-        {
-            condition: generator => !generator.skipUserManagement,
-            path: SERVER_TEST_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/domain/AuthorityTest.java',
-                    renameTo: generator => `${generator.javaDir}/domain/AuthorityTest.java`,
-                },
-                {
-                    file: 'package/domain/UserTest.java',
-                    renameTo: generator => `${generator.javaDir}/domain/UserTest.java`,
                 },
             ],
         },
@@ -228,6 +157,10 @@ const serverFiles = {
                 {
                     file: 'package/security/RandomUtil.java',
                     renameTo: generator => `${generator.javaDir}security/RandomUtil.java`,
+                },
+                {
+                    file: 'package/security/SecurityIdentity.java',
+                    renameTo: generator => `${generator.javaDir}security/SecurityIdentity.java`,
                 },
             ],
         },
@@ -301,20 +234,6 @@ const serverFiles = {
                 },
             ],
         },
-        {
-            condition: generator => !generator.skipUserManagement,
-            path: SERVER_TEST_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/service/mapper/UserMapperTest.java',
-                    renameTo: generator => `${generator.javaDir}/service/mapper/UserMapperTest.java`,
-                },
-                {
-                    file: 'package/domain/UserTest.java',
-                    renameTo: generator => `${generator.javaDir}/domain/UserTest.java`,
-                },
-            ],
-        },
     ],
     serverJavaWebRestError: [
         {
@@ -361,30 +280,6 @@ const serverFiles = {
             ],
         },
         {
-            condition: generator => generator.databaseType !== 'no' && generator.authenticationType === 'jwt',
-            path: SERVER_TEST_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/web/rest/AccountResourceTest_jwt.java',
-                    renameTo: generator => `${generator.javaDir}web/rest/AccountResourceTest.java`,
-                },
-            ],
-        },
-        {
-            condition: generator => generator.authenticationType === 'oauth2',
-            path: SERVER_TEST_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/web/rest/AccountResourceTest_oauth2.java',
-                    renameTo: generator => `${generator.javaDir}web/rest/AccountResourceTest.java`,
-                },
-                {
-                    file: 'package/web/rest/LogoutResourceTest.java',
-                    renameTo: generator => `${generator.javaDir}web/rest/LogoutResourceTest.java`,
-                },
-            ],
-        },
-        {
             path: SERVER_MAIN_SRC_DIR,
             templates: [
                 {
@@ -394,10 +289,6 @@ const serverFiles = {
                 {
                     file: 'package/web/rest/JHipsterMetricsEndpoint.java',
                     renameTo: generator => `${generator.javaDir}web/rest/JHipsterMetricsEndpoint.java`,
-                },
-                {
-                    file: 'package/web/rest/JHipsterConfigurationEndpoint.java',
-                    renameTo: generator => `${generator.javaDir}web/rest/JHipsterConfigurationEndpoint.java`,
                 },
                 {
                     file: 'package/web/rest/vm/ConfigPropsVM.java',
@@ -426,31 +317,12 @@ const serverFiles = {
             ],
         },
         {
-            path: SERVER_TEST_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/web/rest/ManagementInfoResourceTest.java',
-                    renameTo: generator => `${generator.javaDir}web/rest/ManagementInfoResourceTest.java`,
-                },
-            ],
-        },
-        {
             condition: generator => generator.authenticationType === 'jwt' && generator.databaseType !== 'no',
             path: SERVER_MAIN_SRC_DIR,
             templates: [
                 {
                     file: 'package/web/rest/UserJWTController.java',
                     renameTo: generator => `${generator.javaDir}web/rest/UserJWTController.java`,
-                },
-            ],
-        },
-        {
-            condition: generator => generator.authenticationType === 'jwt' && generator.databaseType !== 'no',
-            path: SERVER_TEST_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/web/rest/UserJWTControllerTest.java',
-                    renameTo: generator => `${generator.javaDir}web/rest/UserJWTControllerTest.java`,
                 },
             ],
         },
@@ -512,16 +384,6 @@ const serverFiles = {
                 },
             ],
         },
-        {
-            condition: generator => !generator.skipUserManagement,
-            path: SERVER_TEST_SRC_DIR,
-            templates: [
-                {
-                    file: 'package/web/rest/UserResourceTest.java',
-                    renameTo: generator => `${generator.javaDir}web/rest/UserResourceTest.java`,
-                },
-            ],
-        },
     ],
     docker: [
         {
@@ -571,16 +433,13 @@ function writeFiles() {
     return {
         setUp() {
             this.javaDir = `${this.packageFolder}/`;
-            this.testDir = `${this.packageFolder}/`;
         },
 
         cleanupOldServerFiles() {
             cleanup.cleanupOldServerFiles(
                 this,
                 `${SERVER_MAIN_SRC_DIR}/${this.javaDir}`,
-                `${SERVER_TEST_SRC_DIR}/${this.testDir}`,
                 SERVER_MAIN_RES_DIR,
-                SERVER_TEST_RES_DIR
             );
         },
 

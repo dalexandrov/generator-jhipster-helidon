@@ -15,7 +15,6 @@ const expectedFiles = {
             `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/config/JHipsterProperties.java`,
             `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/web/rest/errors/BadRequestAlertException.java`,
             `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/web/rest/JHipsterMetricsEndpoint.java`,
-            `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/web/rest/JHipsterConfigurationEndpoint.java`,
             `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/web/rest/vm/ConfigPropsVM.java`,
             `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/web/rest/vm/EnvVM.java`,
             `${SERVER_MAIN_SRC_DIR}com/mycompany/myapp/web/util/HeaderUtil.java`,

@@ -1,23 +1,24 @@
+package <%= packageName %>.security.jwt;
 
-package <%=packageName%>.security.jwt;
-
-import <%=packageName%>.config.JHipsterProperties;
+import <%= packageName %>.config.JHipsterProperties;
 import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
-import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import org.jose4j.jws.AlgorithmIdentifiers;
-import org.jose4j.jws.JsonWebSignature;
-import org.jose4j.jwt.JwtClaims;
-import org.jose4j.jwt.NumericDate;
-import org.jose4j.lang.JoseException;
+
+import com.mycompany.myapp.security.SecurityIdentity;
+import io.helidon.common.configurable.Resource;
+import io.helidon.security.jwt.Jwt;
+import io.helidon.security.jwt.SignedJwt;
+import io.helidon.security.jwt.jwk.JwkKeys;
+import io.helidon.security.jwt.jwk.JwkRSA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +44,7 @@ public class TokenProvider {
         this.issuer = jHipsterProperties.security.authentication.jwt.issuer;
         this.tokenValidityInMilliseconds = jHipsterProperties.security.authentication.jwt.tokenValidityInSeconds * 1000;
         this.tokenValidityInMillisecondsForRememberMe =
-            jHipsterProperties.security.authentication.jwt.tokenValidityInSecondsForRememberMe * 1000;
+        jHipsterProperties.security.authentication.jwt.tokenValidityInSecondsForRememberMe * 1000;
     }
 
     @PostConstruct
@@ -54,30 +55,34 @@ public class TokenProvider {
         long now = (new Date()).getTime();
         Date validity;
         if (rememberMe) {
-            validity = new Date(now + tokenValidityInMillisecondsForRememberMe);
+        validity = new Date(now + tokenValidityInMillisecondsForRememberMe);
         } else {
-            validity = new Date(now + tokenValidityInMilliseconds);
+        validity = new Date(now + tokenValidityInMilliseconds);
         }
 
-        JwtClaims claims = new JwtClaims();
-        claims.setSubject(identity.getPrincipal().getName());
-        claims.setClaim(AUTHORITIES_KEY, authorities);
-        claims.setClaim(GROUPS_KEY, identity.getRoles());
-        claims.setIssuedAt(NumericDate.fromMilliseconds(now));
-        claims.setIssuer(this.issuer);
-        claims.setExpirationTime(NumericDate.fromMilliseconds(validity.getTime()));
+        Jwt jwt = Jwt.builder()
+        .subject(identity.getLogin())
+        .addUserGroup("admin")
+        .addScope("admin_scope")
+        .algorithm(JwkRSA.ALG_RS256)
+        .issuer(this.issuer)
+        .audience("http://localhost:8087/jwt")
+        .issueTime(Instant.now())
+        .userPrincipal(identity.getLogin())
+        .keyId("SIGNING_KEY")
+        .expirationTime(Instant.ofEpochSecond(validity.getTime()))
+        .addPayloadClaim(AUTHORITIES_KEY, authorities)
+        .addPayloadClaim(GROUPS_KEY,identity.getRoles())
+        .build();
 
-        JsonWebSignature jws = new JsonWebSignature();
-        jws.setPayload(claims.toJson());
-        jws.setKey(key);
-        jws.setKeyIdHeaderValue(UUID.randomUUID().toString());
-        jws.setHeader("typ", "JWT");
-        jws.setAlgorithmHeaderValue(AlgorithmIdentifiers.RSA_USING_SHA256);
-        try {
-            return jws.getCompactSerialization();
-        } catch (JoseException e) {
-            throw new RuntimeException(e);
-        }
+        JwkKeys jwkKeys = JwkKeys.builder()
+        .resource(Resource.create("jwt/sign-jwk.json"))
+        .build();
+
+        SignedJwt signed = SignedJwt.sign(jwt, jwkKeys.forKeyId("sign-rsa").get());
+        String tokenContent = signed.tokenContent();
+
+        return tokenContent;
     }
 
     public static PrivateKey readPrivateKey(final String pemResName) throws Exception {
