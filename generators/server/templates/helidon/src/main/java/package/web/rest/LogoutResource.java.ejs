@@ -2,13 +2,12 @@
 package <%=packageName%>.web.rest;
 
 import <%=packageName%>.config.JHipsterProperties;
+import io.helidon.security.annotations.Authenticated;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -33,14 +32,8 @@ public class LogoutResource {
     JHipsterProperties jHipsterProperties;
 
     @Inject
-    @IdToken
     JsonWebToken idToken;
 
-    @Context
-    HttpServletRequest request;
-
-    @Context
-    HttpServletResponse response;
 
     @ConfigProperty(name = "helidon.oidc.authentication.cookie-path")
     String cookiePath;
@@ -52,20 +45,7 @@ public class LogoutResource {
      */
     @POST
     @Authenticated
-    public Response logout() {
-        request.getSession().invalidate();
-        var cookies = request.getCookies();
-        if (cookies != null)
-            asList(cookies).forEach(cookie -> {
-                cookie.setValue("");
-                cookie.setPath(cookiePath);
-                cookie.setMaxAge(0);
-                response.addCookie(cookie);
-            });
-        var logoutDetails = Map.of(
-            "logoutUrl", jHipsterProperties.oidc.logoutUrl,
-            "idToken", idToken.getRawToken()
-        );
-        return Response.ok(logoutDetails).build();
+    public void logout() {
+        //currently not supported
     }
 }
