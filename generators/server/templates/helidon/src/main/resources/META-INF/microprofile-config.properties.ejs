@@ -35,19 +35,14 @@ helidon.http.auth.permission.user.policy=user-role
 
 <%if (authenticationType === 'oauth2') { _%>
 # OAuth 2.0 and OIDC
-helidon.oidc.enabled=true
-helidon.oidc.auth-server-url=http://localhost:9080/auth/realms/jhipster/
-%dev.helidon.oidc.client-id=web_app
-%dev.helidon.oidc.credentials.secret=web_app
-helidon.oidc.application-type=hybrid
-helidon.oidc.authentication.scopes=profile,address,email,address,phone,offline_access
-helidon.oidc.authentication.cookie-path=/
-helidon.oidc.authentication.redirect-path=/login/oauth2/code/oidc
-helidon.oidc.authentication.restore-path-after-redirect=false
+security.properties.oidc-identity-uri=http://localhost:9080/auth/realms/jhipster/
+security.properties.oidc-client-id=web_app
+security.properties.oidc-client-secret=web_app
+security.properties.server-type="@default"
+
+security.providers.oidc.redirect-uri=/login/oauth2/code/oidc
+security.providers.oidc.cookie-name="OIDC_EXAMPLE_COOKIE"
+security.providers.oidc.header-use=true
 
 jhipster.oidc.logout-url=http://localhost:9080/auth/realms/jhipster/protocol/openid-connect/logout
-
-%test.helidon.oidc.client-id=dummy
-%test.helidon.oidc.application-type=service
-%test.jhipster.oidc.logout-url=some-dummy-logoutUrl
 <%_ } _%>
