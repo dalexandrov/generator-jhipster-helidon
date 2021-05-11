@@ -1,0 +1,15 @@
+package <%=packageName%>.config.mock;
+
+import <%=packageName%>.config.JHipsterInfo;
+
+import javax.enterprise.context.ApplicationScoped;
+@ApplicationScoped
+public class JHipsterInfoMock implements JHipsterInfo {
+
+    public static Boolean enable;
+
+    @Override
+    public Boolean isEnable() {
+        return enable;
+    }
+}

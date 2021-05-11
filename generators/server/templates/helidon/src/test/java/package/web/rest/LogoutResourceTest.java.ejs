@@ -1,0 +1,43 @@
+package <%=packageName%>.web.rest;
+
+import <%=packageName%>.TestUtil;
+import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import static io.restassured.RestAssured.given;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class LogoutResourceTest {
+
+    JsonWebToken idToken;
+
+    @BeforeEach
+    public void setup() {
+        Mockito.when(idToken.getRawToken()).thenReturn("1234");
+    }
+
+    @Test
+    public void getLogoutInformation() {
+        String expectedLogoutUrl = "some-dummy-logoutUrl";
+
+        var jsonPath = given()
+            .auth()
+            .preemptive()
+            .oauth2(TestUtil.getAdminToken())
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
+            .when()
+            .post("/api/logout")
+            .then()
+            .statusCode(OK.getStatusCode())
+            .extract()
+            .jsonPath();
+
+        assertThat(jsonPath.getString("logoutUrl")).isEqualTo(expectedLogoutUrl);
+        assertThat(jsonPath.getString("idToken")).isEqualTo("1234");
+    }
+}

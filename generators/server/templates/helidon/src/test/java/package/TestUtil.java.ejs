@@ -1,0 +1,114 @@
+package <%=packageName%>;
+
+import static <%=packageName%>.config.Constants.DATE_TIME_FORMAT;
+<%_ if(!skipUserManagement) { _%>
+import static io.restassured.RestAssured.given;
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.hamcrest.Matchers.*;
+<%_ } _%>
+import static org.assertj.core.api.Assertions.assertThat;
+
+<%_ if(!skipUserManagement) { _%>
+import <%=packageName%>.web.rest.vm.LoginVM;
+<%_ } _%>
+import io.restassured.mapper.ObjectMapper;
+import io.restassured.mapper.ObjectMapperDeserializationContext;
+import io.restassured.mapper.ObjectMapperSerializationContext;
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
+import javax.json.bind.JsonbConfig;
+<%_ if(!skipUserManagement) { _%>
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+<%_ } _%>
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.Temporal;
+<%_ if(authenticationType === 'oauth2') { _%>
+import java.util.Set;
+<%_ } _%>
+
+/**
+ * Utility class for testing REST controllers.
+ */
+public final class TestUtil {
+
+    private static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
+        .ofPattern(DATE_TIME_FORMAT)
+        .withZone(ZoneId.of("UTC"));
+
+    public static String formatDateTime(Temporal temporal) {
+        return DATE_TIME_FORMATTER.format(temporal);
+    }
+
+    /**
+     * Verifies the equals/hashcode contract on the domain object.
+     */
+    public static <T> void equalsVerifier(Class<T> clazz) throws Exception {
+        T domainObject1 = clazz.getConstructor().newInstance();
+        assertThat(domainObject1.toString()).isNotNull();
+        assertThat(domainObject1).isEqualTo(domainObject1);
+        assertThat(domainObject1.hashCode()).isEqualTo(domainObject1.hashCode());
+        // Test with an instance of another class
+        Object testOtherObject = new Object();
+        assertThat(domainObject1).isNotEqualTo(testOtherObject);
+        assertThat(domainObject1).isNotEqualTo(null);
+        // Test with an instance of the same class
+        T domainObject2 = clazz.getConstructor().newInstance();
+        assertThat(domainObject1).isNotEqualTo(domainObject2);
+        // HashCodes are equals because the objects are not persisted yet
+        assertThat(domainObject1.hashCode()).isEqualTo(domainObject2.hashCode());
+    }
+<%_ if(!skipUserManagement) { _%>
+
+    public static String getAdminToken() {
+        return getToken("admin", "admin");
+    }
+
+    public static String getToken(String username, String password) {
+        //Authenticating user
+        var login = new LoginVM();
+        login.username = username;
+        login.password = password;
+
+        return given()
+            .body(login)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
+            .when()
+            .post("/api/authenticate")
+            .then()
+            .statusCode(OK.getStatusCode())
+            .body("id_token", instanceOf(String.class))
+            .body("id_token", notNullValue())
+            .header(HttpHeaders.AUTHORIZATION, not(blankOrNullString()))
+            .extract()
+            .path("id_token");
+    }
+<%_ } _%>
+
+<%if (authenticationType === 'oauth2') { _%>
+    public static String getAdminToken() {
+        return MockOidcServerTestResource.getAccessToken("admin", Set.of("ROLE_ADMIN", "ROLE_USER"));
+    }
+
+<%_ } _%>
+    public static ObjectMapper jsonbObjectMapper() {
+        final var config = new JsonbConfig().withDateFormat(DATE_TIME_FORMAT, null);
+        final Jsonb jsonb = JsonbBuilder.create(config);
+        return new ObjectMapper() {
+
+            @Override
+            public Object deserialize(ObjectMapperDeserializationContext context) {
+                return jsonb.fromJson(context.getDataToDeserialize().asString(), context.getType());
+            }
+
+            @Override
+            public Object serialize(ObjectMapperSerializationContext context) {
+                return jsonb.toJson(context.getObjectToSerialize());
+            }
+        };
+    }
+
+    private TestUtil() {}
+}

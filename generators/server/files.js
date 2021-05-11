@@ -6,7 +6,7 @@ const jhipsterFiles = require('generator-jhipster/generators/server/files').serv
 /* Constants use throughout */
 const INTERPOLATE_REGEX = constants.INTERPOLATE_REGEX;
 const DOCKER_DIR = constants.DOCKER_DIR;
-const { SERVER_MAIN_SRC_DIR, SERVER_MAIN_RES_DIR, SERVER_TEST_RES_DIR } = constants;
+const { SERVER_MAIN_SRC_DIR, SERVER_MAIN_RES_DIR, SERVER_TEST_SRC_DIR, SERVER_TEST_RES_DIR } = constants;
 
 const serverFiles = {
     serverBuild: [
@@ -47,6 +47,21 @@ const serverFiles = {
                 'templates/mail/activationEmail.html',
                 'templates/mail/creationEmail.html',
                 'templates/mail/passwordResetEmail.html',
+            ],
+        },
+    ],
+    serverTestSupport: [
+        {
+            path: SERVER_TEST_SRC_DIR,
+            templates: [
+                {
+                    file: 'package/ArchTest.java',
+                    renameTo: generator => `${generator.javaDir}/ArchTest.java`,
+                },
+                {
+                    file: 'package/TestUtil.java',
+                    renameTo: generator => `${generator.javaDir}/TestUtil.java`,
+                },
             ],
         },
     ],
@@ -102,6 +117,19 @@ const serverFiles = {
                 },
             ],
         },
+        {
+            path: SERVER_TEST_SRC_DIR,
+            templates: [
+                {
+                    file: 'package/config/mock/JHipsterInfoMock.java',
+                    renameTo: generator => `${generator.javaDir}/config/mock/JHipsterInfoMock.java`,
+                },
+                {
+                    file: 'package/config/LocalDateProviderTest.java',
+                    renameTo: generator => `${generator.javaDir}/config/LocalDateProviderTest.java`,
+                },
+            ],
+        },
     ],
     serverJavaDomain: [
         {
@@ -123,6 +151,20 @@ const serverFiles = {
                 {
                     file: 'package/domain/UserRepository.java',
                     renameTo: generator => `${generator.javaDir}domain/UserRepository.java`,
+                },
+            ],
+        },
+        {
+            condition: generator => !generator.skipUserManagement,
+            path: SERVER_TEST_SRC_DIR,
+            templates: [
+                {
+                    file: 'package/domain/AuthorityTest.java',
+                    renameTo: generator => `${generator.javaDir}/domain/AuthorityTest.java`,
+                },
+                {
+                    file: 'package/domain/UserTest.java',
+                    renameTo: generator => `${generator.javaDir}/domain/UserTest.java`,
                 },
             ],
         },
@@ -280,6 +322,16 @@ const serverFiles = {
             ],
         },
         {
+            condition: generator => generator.authenticationType === 'oauth2',
+            path: SERVER_TEST_SRC_DIR,
+            templates: [
+                {
+                    file: 'package/web/rest/LogoutResourceTest.java',
+                    renameTo: generator => `${generator.javaDir}web/rest/LogoutResourceTest.java`,
+                },
+            ],
+        },
+        {
             path: SERVER_MAIN_SRC_DIR,
             templates: [
                 {
@@ -384,6 +436,16 @@ const serverFiles = {
                 },
             ],
         },
+        {
+            condition: generator => !generator.skipUserManagement,
+            path: SERVER_TEST_SRC_DIR,
+            templates: [
+                {
+                    file: 'package/web/rest/UserResourceTest.java',
+                    renameTo: generator => `${generator.javaDir}web/rest/UserResourceTest.java`,
+                },
+            ],
+        },
     ],
     docker: [
         {
@@ -433,13 +495,16 @@ function writeFiles() {
     return {
         setUp() {
             this.javaDir = `${this.packageFolder}/`;
+            this.testDir = `${this.packageFolder}/`;
         },
 
         cleanupOldServerFiles() {
             cleanup.cleanupOldServerFiles(
                 this,
                 `${SERVER_MAIN_SRC_DIR}/${this.javaDir}`,
+                `${SERVER_TEST_SRC_DIR}/${this.testDir}`,
                 SERVER_MAIN_RES_DIR,
+                SERVER_TEST_RES_DIR
             );
         },
 
