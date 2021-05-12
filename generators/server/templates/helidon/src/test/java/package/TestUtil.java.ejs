@@ -89,7 +89,7 @@ public final class TestUtil {
 
 <%if (authenticationType === 'oauth2') { _%>
     public static String getAdminToken() {
-        return MockOidcServerTestResource.getAccessToken("admin", Set.of("ROLE_ADMIN", "ROLE_USER"));
+        return "Mock"; //TODO: fix to correct generation
     }
 
 <%_ } _%>
