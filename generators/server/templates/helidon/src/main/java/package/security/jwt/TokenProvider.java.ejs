@@ -40,15 +40,15 @@ public class TokenProvider {
     @Inject
     public TokenProvider(JHipsterProperties jHipsterProperties)
         throws Exception {
-        this.key = readPrivateKey(jHipsterProperties.security.authentication.jwt.privateKey.location);
-        this.issuer = jHipsterProperties.security.authentication.jwt.issuer;
-        this.tokenValidityInMilliseconds = jHipsterProperties.security.authentication.jwt.tokenValidityInSeconds * 1000;
+        this.key = readPrivateKey(jHipsterProperties.getSecurity().authentication.jwt.privateKey.location);
+        this.issuer = jHipsterProperties.getSecurity().authentication.jwt.issuer;
+        this.tokenValidityInMilliseconds = jHipsterProperties.getSecurity().authentication.jwt.tokenValidityInSeconds * 1000;
         this.tokenValidityInMillisecondsForRememberMe =
-        jHipsterProperties.security.authentication.jwt.tokenValidityInSecondsForRememberMe * 1000;
+        jHipsterProperties.getSecurity().authentication.jwt.tokenValidityInSecondsForRememberMe * 1000;
     }
 
     @PostConstruct
-    void init() throws Exception {}
+    void init() throws RuntimeException {}
 
     public String createToken(SecurityIdentity identity, boolean rememberMe) {
         String authorities = String.join(", ", identity.getRoles());

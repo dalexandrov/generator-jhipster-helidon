@@ -29,7 +29,7 @@ const serverFiles = {
     serverResource: [
         {
             path: SERVER_MAIN_RES_DIR,
-            templates: [{ file: 'default_banner.txt', method: 'copy', noEjs: true }, 'META-INF/microprofile-config.properties'],
+            templates: [{ file: 'default_banner.txt', method: 'copy', noEjs: true }, 'META-INF/microprofile-config.properties','META-INF/beans.xml'],
         },
         {
             condition: generator => generator.authenticationType === 'jwt',

@@ -1,11 +1,29 @@
 
 package <%=packageName%>.config;
 
+import javax.enterprise.context.ApplicationScoped;
 
+@ApplicationScoped
 public class JHipsterProperties {
 <%_ if (authenticationType === 'jwt') { _%>
-    public Security security;
-    public Mail mail;
+    private Security security;
+    private Mail mail;
+
+    public Security getSecurity() {
+        return security;
+    }
+
+    public void setSecurity(Security security) {
+        this.security = security;
+    }
+
+    public Mail getMail() {
+        return mail;
+    }
+
+    public void setMail(Mail mail) {
+        this.mail = mail;
+    }
 
     public static class Security {
         public Authentication authentication;

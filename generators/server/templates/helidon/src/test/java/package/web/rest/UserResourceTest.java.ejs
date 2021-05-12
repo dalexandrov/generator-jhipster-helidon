@@ -16,6 +16,7 @@ import <%=packageName%>.security.AuthoritiesConstants;
 import <%=packageName%>.service.dto.UserDTO;
 import <%=packageName%>.service.mapper.UserMapper;
 import <%=packageName%>.web.rest.vm.ManagedUserVM;
+import io.helidon.microprofile.tests.junit5.HelidonTest;
 import io.restassured.RestAssured;
 import java.time.Instant;
 import java.util.Set;
@@ -27,6 +28,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.*;
 
+@HelidonTest
 public class UserResourceTest {
     private static final String DEFAULT_LOGIN = "johndoe";
     private static final String UPDATED_LOGIN = "jhipster";

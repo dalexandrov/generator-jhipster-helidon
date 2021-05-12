@@ -4,13 +4,13 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import javax.persistence.PersistenceContext;
 import javax.persistence.EntityManager;
 
 @ApplicationScoped
 public class UserRepository {
 
-    @Inject
+    @PersistenceContext
     private EntityManager em;
 
     public void persist(User user) {

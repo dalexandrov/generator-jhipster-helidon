@@ -1,10 +1,12 @@
 package <%=packageName%>.config.mock;
 
 import <%=packageName%>.config.JHipsterInfo;
+import com.mycompany.myapp.config.JHipsterInfo;
 
 import javax.enterprise.context.ApplicationScoped;
+
 @ApplicationScoped
-public class JHipsterInfoMock implements JHipsterInfo {
+public class JHipsterInfoMock extends JHipsterInfo {
 
     public static Boolean enable;
 

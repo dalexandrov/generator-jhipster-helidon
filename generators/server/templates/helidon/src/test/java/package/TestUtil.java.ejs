@@ -7,6 +7,8 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.Matchers.*;
 <%_ } _%>
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.text.IsBlankString.blankOrNullString;
+
 
 <%_ if(!skipUserManagement) { _%>
 import <%=packageName%>.web.rest.vm.LoginVM;

@@ -3,9 +3,16 @@ package <%=packageName%>.config;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-public interface JHipsterInfo {
+import javax.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
+public class JHipsterInfo {
+
+    private boolean enabled=false;
 
     @ConfigProperty(name = "swagger.enable", defaultValue = "true")
-    Boolean isEnable();
+    public Boolean isEnable(){
+        return enabled;
+    }
 
 }
