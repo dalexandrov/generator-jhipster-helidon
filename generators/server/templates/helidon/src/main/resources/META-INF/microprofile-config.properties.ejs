@@ -25,9 +25,8 @@ security.properties.oidc-client-id=web_app
 security.properties.oidc-client-secret=web_app
 security.properties.server-type="@default"
 
-security.providers.oidc.redirect-uri=/login/oauth2/code/oidc
-security.providers.oidc.cookie-name="OIDC_EXAMPLE_COOKIE"
-security.providers.oidc.header-use=true
+helidon.oidc.auth-server-url=http://localhost:9080/auth/realms/jhipster/
+helidon.oidc.client-id=web_app
 
 jhipster.oidc.logout-url=http://localhost:9080/auth/realms/jhipster/protocol/openid-connect/logout
 <%_ } _%>
