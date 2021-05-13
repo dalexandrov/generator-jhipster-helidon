@@ -109,24 +109,24 @@ function askForServerSideOpts(meta) {
             choices: reactive ? constants.R2DBC_DB_OPTIONS : constants.SQL_DB_OPTIONS,
             default: 0,
         },
-        {
-            when: response => response.databaseType === 'sql',
-            type: 'list',
-            name: 'devDatabaseType',
-            message: `Which ${chalk.yellow('*development*')} database would you like to use?`,
-            choices: response =>
-                [
-                    {
-                        value: 'h2Disk',
-                        name: 'H2 with disk-based persistence',
-                    },
-                    {
-                        value: 'h2Memory',
-                        name: 'H2 with in-memory persistence',
-                    },
-                ].concat(constants.SQL_DB_OPTIONS.find(it => it.value === response.prodDatabaseType)),
-            default: 0,
-        },
+        // {
+        //     when: response => response.databaseType === 'sql',
+        //     type: 'list',
+        //     name: 'devDatabaseType',
+        //     message: `Which ${chalk.yellow('*development*')} database would you like to use?`,
+        //     choices: response =>
+        //         [
+        //             {
+        //                 value: 'h2Disk',
+        //                 name: 'H2 with disk-based persistence',
+        //             },
+        //             {
+        //                 value: 'h2Memory',
+        //                 name: 'H2 with in-memory persistence',
+        //             },
+        //         ].concat(constants.SQL_DB_OPTIONS.find(it => it.value === response.prodDatabaseType)),
+        //     default: 0,
+        // },
         {
             when: response => response.databaseType === 'sql' && !reactive,
             type: 'confirm',

@@ -10,14 +10,12 @@ const randexp = jhipsterUtils.RandexpWithFaker;
 const SERVER_MAIN_SRC_DIR = constants.SERVER_MAIN_SRC_DIR;
 const INTERPOLATE_REGEX = constants.INTERPOLATE_REGEX;
 const SERVER_MAIN_RES_DIR = constants.SERVER_MAIN_RES_DIR;
-//const SERVER_TEST_SRC_DIR = constants.SERVER_TEST_SRC_DIR;
-/*
+const SERVER_TEST_SRC_DIR = constants.SERVER_TEST_SRC_DIR;
 
 const DOCKER_DIR = constants.DOCKER_DIR;
 const TEST_DIR = constants.TEST_DIR;
 
 const SERVER_TEST_RES_DIR = constants.SERVER_TEST_RES_DIR;
-*/
 
 /*
   faker, randExp, getRecentDate and getRecentForLiquibase are copied from the upstream JHipster generator.
@@ -87,21 +85,21 @@ const serverFiles = {
                 },
             ],
         },
-        // {
-        //     path: SERVER_TEST_SRC_DIR,
-        //     templates: [
-        //         {
-        //             file: 'package/domain/EntityTest.java',
-        //             renameTo: generator => `${generator.packageFolder}/domain/${generator.entityClass}Test.java`,
-        //             useBluePrint: true,
-        //         },
-        //         {
-        //             file: 'package/web/rest/EntityResourceTest.java',
-        //             renameTo: generator => `${generator.packageFolder}/web/rest/${generator.entityClass}ResourceTest.java`,
-        //             useBluePrint: true,
-        //         },
-        //     ],
-        // },
+        {
+            path: SERVER_TEST_SRC_DIR,
+            templates: [
+                {
+                    file: 'package/domain/EntityTest.java',
+                    renameTo: generator => `${generator.packageFolder}/domain/${generator.entityClass}Test.java`,
+                    useBluePrint: true,
+                },
+                {
+                    file: 'package/web/rest/EntityResourceTest.java',
+                    renameTo: generator => `${generator.packageFolder}/web/rest/${generator.entityClass}ResourceTest.java`,
+                    useBluePrint: true,
+                },
+            ],
+        },
         {
             condition: generator => generator.service === 'serviceImpl' && !generator.embedded,
             path: SERVER_MAIN_SRC_DIR,
@@ -222,52 +220,31 @@ const serverFilesFromJHipster = {
                 },
             ],
         },
-        // {
-        //     condition: generator => generator.hasDto,
-        //     path: SERVER_TEST_SRC_DIR,
-        //     templates: [
-        //         {
-        //             file: 'package/service/dto/EntityDTOTest.java',
-        //             renameTo: generator => `${generator.packageFolder}/service/dto/${generator.asDto(generator.entityClass)}Test.java`,
-        //         },
-        //     ],
-        // },
-        // {
-        //     condition: generator =>
-        //         generator.hasDto &&
-        //         (generator.databaseType === 'sql' || generator.databaseType === 'mongodb'),
-        //     path: SERVER_TEST_SRC_DIR,
-        //     templates: [
-        //         {
-        //             file: 'package/service/mapper/EntityMapperTest.java',
-        //             renameTo: generator => `${generator.packageFolder}/service/mapper/${generator.entityClass}MapperTest.java`,
-        //         },
-        //     ],
-        // },
+        SQL_DB_OPTIONS
     ],
 };
 
 function updateDtoTest() {
-    // this.replaceContent(
-    //     `${SERVER_TEST_SRC_DIR}/${this.packageFolder}/service/dto/${this.asDto(this.entityClass)}Test.java`,
-    //     'web.rest.TestUtil',
-    //     'TestUtil'
-    // );
-    //
-    // this.replaceContent(
-    //     `${SERVER_TEST_SRC_DIR}/${this.packageFolder}/service/dto/${this.asDto(this.entityClass)}Test.java`,
-    //     'getId()',
-    //     'id'
-    // );
-    //
-    // this.replaceContent(
-    //     `${SERVER_TEST_SRC_DIR}/${this.packageFolder}/service/dto/${this.asDto(this.entityClass)}Test.java`,
-    //     'setId\\((.+)\\)',
-    //     'id = $1',
-    //     true
-    // );
-    //
-    // this.replaceContent(`${SERVER_TEST_SRC_DIR}/${this.packageFolder}/service/mapper/${this.entityClass}MapperTest.java`, 'getId()', 'id');
+    this.replaceContent(
+        `${SERVER_TEST_SRC_DIR}/${this.packageFolder}/service/dto/${this.asDto(this.entityClass)}Test.java`,
+        'web.rest.TestUtil',
+        'TestUtil'
+    );
+
+    this.replaceContent(
+        `${SERVER_TEST_SRC_DIR}/${this.packageFolder}/service/dto/${this.asDto(this.entityClass)}Test.java`,
+        'getId()',
+        'id'
+    );
+
+    this.replaceContent(
+        `${SERVER_TEST_SRC_DIR}/${this.packageFolder}/service/dto/${this.asDto(this.entityClass)}Test.java`,
+        'setId\\((.+)\\)',
+        'id = $1',
+        true
+    );
+
+    this.replaceContent(`${SERVER_TEST_SRC_DIR}/${this.packageFolder}/service/mapper/${this.entityClass}MapperTest.java`, 'getId()', 'id');
 }
 
 function writeFiles() {
