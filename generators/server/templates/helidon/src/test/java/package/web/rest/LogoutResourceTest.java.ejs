@@ -17,10 +17,28 @@ public class LogoutResourceTest {
 
     @BeforeEach
     public void setup() {
-        Mockito.when(idToken.getRawToken()).thenReturn("1234");
-    }
+        idToken = new JsonWebToken() {
 
-    @Test
+            @Override
+            public String getName() {
+            return "name";
+            }
+
+            @Override
+            public Set<String> getClaimNames() {
+            return new HashSet<>();
+            }
+
+            @Override
+            public <T> T getClaim(String s) {
+                    return (T)"claim";
+                }
+            };
+        Mockito.when(idToken.getRawToken()).thenReturn("1234");
+        }
+
+
+        @Test
     public void getLogoutInformation() {
         String expectedLogoutUrl = "some-dummy-logoutUrl";
 
