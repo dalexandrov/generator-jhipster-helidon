@@ -27,7 +27,6 @@
     },
     "dependencies": {
         "chalk": "^4.1.0",
-        "each-async": "^0.0.1",
         "faker": "5.1.0",
         "generator-jhipster": "6.10.5",
         "glob": "7.1.6",

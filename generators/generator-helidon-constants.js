@@ -3,7 +3,7 @@ const HELIDON_VERSION = '2.2.2';
 const CACHE_MAXIMUM_SIZE = 100;
 const CACHE_EXPIRE_AFTER_WRITE = '3600S';
 
-const SQL_DB_OPTIONS2 = [
+const SQL_DB_OPTIONS = [
     {
         value: 'mysql',
         name: 'MySQL',
