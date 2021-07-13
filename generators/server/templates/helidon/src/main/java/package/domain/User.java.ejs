@@ -99,9 +99,9 @@ public class User implements Serializable {
 
     @NotNull
 <%_ if (databaseType === 'sql') { _%>
-    @Column(nullable = false)
+    @Column(nullable = true)
 <%_ } _%>
-    public boolean activated = false;
+    public boolean activated = true;
 
     @Size(min = 2, max = 10)
 <%_ if (databaseType === 'sql') { _%>
