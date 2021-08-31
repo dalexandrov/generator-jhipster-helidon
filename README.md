@@ -5,17 +5,11 @@
 
 > ## 🛠 Mode: Still under construction!
 
-> JHipster blueprint, JHipster Helidon blueprint
+> JHipster Helidon blueprint
 
 # Introduction
 
 This is a [JHipster](https://www.jhipster.tech/) blueprint, that is meant to be used in a JHipster application.
-
-# Demo
-
-Because a code worth a 1k words here your have sample JHipster helidon repositories
-
--   The classic [JHipster Sample App](https://github.com/jhipster/jhipster-sample-app-helidon)
 
 # Prerequisites
 
@@ -96,16 +90,27 @@ npm link generator-jhipster-helidon
 npm link generator-jhipster (Optional: Needed only if you are using a non-released JHipster version)
 
 
-
-jhipster -d --blueprint helidon
+jhipster-helidon  
 
 ```
 
+2. Build you app using maven wrapper
+
+```bash
+./mvnw
+```
+
+or
+
+```bash
+mvn clean install 
+```
+
+(since I'm only in the beginning you may add `-DskipTests`)
+
 🚦 What we have now
 
-✅ Generate App generation - `jhipster --blueprints helidon`
-
-✅ Entity generation - `jhipster --blueprints helidon entity <entity-name>`
+✅ Generate App generation - `jhipster-helidon`
 
 Interested in contributing?
 Check out [JHipster contributing guide](https://github.com/jhipster/generator-jhipster/blob/master/CONTRIBUTING.md) to get started.

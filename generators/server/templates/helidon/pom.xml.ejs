@@ -55,6 +55,11 @@
         <mongock-bom.version>4.1.19</mongock-bom.version>
         <mongodb-driver-sync.version>4.1.1</mongodb-driver-sync.version>
         <%_ } _%>
+        <commons.version>3.4</commons.version>
+        <wildfly-elytron.version>1.15.3.Final</wildfly-elytron.version>
+        <rest-assured.version>4.3.3</rest-assured.version>
+        <assertj-core.version>3.19.0</assertj-core.version>
+        <mockito-core.version>3.7.7</mockito-core.version>
 
         <!-- Plugin properties -->
         <checkstyle.version>8.27</checkstyle.version>
@@ -62,7 +67,6 @@
         <jacoco.utReportFile>${jacoco.utReportFolder}/test.exec</jacoco.utReportFile>
         <junit.utReportFolder>${project.testresult.directory}/test</junit.utReportFolder>
         <junit.itReportFolder>${project.testresult.directory}/integrationTest</junit.itReportFolder>
-        <!-- jhipster-needle-maven-property -->
     </properties>
 
     <parent>
@@ -115,13 +119,15 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
+            <version>${commons.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wildfly.security</groupId>
             <artifactId>wildfly-elytron</artifactId>
-            <version>1.15.3.Final</version>
+            <version>${wildfly-elytron.version}</version>
         </dependency>
+
+        <!--Testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -145,19 +151,19 @@
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
-            <version>4.3.3</version>
+            <version>${rest-assured.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.19.0</version>
+            <version>${assertj-core.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.7.7</version>
+            <version>${mockito-core.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
